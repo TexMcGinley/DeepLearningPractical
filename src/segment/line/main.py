@@ -74,7 +74,7 @@ def mask_bounding_boxes(image, stats, box_ids, padding=0):
 
         cv2.rectangle(mask, (x, y), (x_end, y_end), 255, -1)
 
-    return cv2.bitwise_and(image, image, mask=cv2.merge([mask]*3))
+    return cv2.bitwise_and(image, image, mask=cv2.merge([mask]))
 
 def crop_to_content(image, padding=5):
     image = image.copy()
@@ -135,5 +135,5 @@ if __name__ == "__main__":
             masked_image = mask_bounding_boxes(image, stats, i[1], padding=2)
             cropped_image = crop_to_content(masked_image, padding=2)
 
-            os.makedirs('image_crops/'+file_name, exist_ok=True)
-            cv2.imwrite(f"image_crops/{file_name}/crop_{i[0]}.png", cropped_image)
+            os.makedirs('image-crops/'+file_name, exist_ok=True)
+            cv2.imwrite(f"image-crops/{file_name}/crop_{i[0]}.png", cropped_image)
