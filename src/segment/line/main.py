@@ -100,7 +100,7 @@ if __name__ == "__main__":
         image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
         # Line projection histogram
-        hist = line_projection_histogram(image, axis='horizontal', show_plot=False)
+        hist = line_projection_histogram(image, show_plot=False)
         smoothed_hist = smooth_histogram(hist)
         peaks, _ = count_peaks(smoothed_hist, height_threshold=5, distance=10, plot=False)
 
@@ -125,8 +125,10 @@ if __name__ == "__main__":
 
             y_coords.append((i, cy))
 
-            # cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 1)
-            # cv2.circle(image, (int(cx), int(cy)), 2, (0, 0, 255), -1)  
+        #     cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 1)
+        #     cv2.circle(image, (int(cx), int(cy)), 2, (0, 0, 255), -1)
+        # cv2.imshow("image", image)
+        # cv2.waitKey(0)  
 
         clusters = cluster_boxes(y_coords, peaks)
         for i in clusters.items():
