@@ -28,7 +28,6 @@ def line_projection_histogram(image, show_plot=True):
 def smooth_histogram(histogram):
     return gaussian_filter1d(histogram, sigma=5)
 
-
 def count_peaks(histogram, height_threshold=25, distance=30, plot=True):
     peaks, _ = find_peaks(histogram, height=height_threshold, distance=distance)
 
@@ -131,7 +130,6 @@ if __name__ == "__main__":
 
         clusters = cluster_boxes(y_coords, peaks)
         for i in clusters.items():
-            print(i)
             masked_image = mask_bounding_boxes(image, stats, i[1], padding=2)
             cropped_image = crop_to_content(masked_image, padding=2)
 
