@@ -89,6 +89,13 @@ def crop_to_content(image, padding=5):
 
     return image[y1:y2, x1:x2]
 
+def sort_cluster(clusters, stats):
+    def cluster_mean_y(cluster):
+        cluster = clusters[cluster]
+        return np.mean([stats[i, cv2.CC_STAT_TOP] + stats[i, cv2.CC_STAT_HEIGHT] / 2 for i in np.array(cluster)])
+    
+    return sorted(clusters, key=cluster_mean_y)
+
 if __name__ == "__main__":
     for image_path in image_paths:
         file_name = image_path.split(".")[0]
@@ -107,6 +114,7 @@ if __name__ == "__main__":
         # Erode image to remove small noise
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         img = cv2.erode(image, kernel, iterations=1)
+        # img = cv2.dilate(img, kernel, iterations=1)
 
         # Connected components analysis
         num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(img, connectivity=8, ltype=cv2.CV_32S)
@@ -130,10 +138,12 @@ if __name__ == "__main__":
         # cv2.imshow("image", image)
         # cv2.waitKey(0)  
 
+        # clusters = sort_cluster(cluster_boxes(y_coords, peaks), stats)
         clusters = cluster_boxes(y_coords, peaks)
+
         for i in clusters.items():
             masked_image = mask_bounding_boxes(image, stats, i[1], padding=2)
             cropped_image = crop_to_content(masked_image, padding=2)
 
-            os.makedirs('image-crops/'+file_name, exist_ok=True)
-            cv2.imwrite(f"image-crops/{file_name}/crop_{i[0]}.png", cropped_image)
+            os.makedirs('line-crops/'+file_name, exist_ok=True)
+            cv2.imwrite(f"line-crops/{file_name}/crop_{i[0]}.png", cropped_image)
