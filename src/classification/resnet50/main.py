@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models import resnet50
+from torchvision.models import resnet50, ResNet50_Weights
 from torchsummary import summary
 from torchvision import transforms
 from torchvision import datasets, transforms
@@ -35,7 +35,7 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 print(dataset.classes)
 print("Number of classes:", len(dataset.classes))
 
-model = resnet50(pretrained=True)
+model = resnet50(weights=ResNet50_Weights.DEFAULT)
 model.fc = nn.Linear(model.fc.in_features, len(alphabet))
 model = model.to(device)
 summary(model, (3, 48, 48))
