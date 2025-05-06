@@ -11,7 +11,7 @@ from PIL import Image
 from tqdm import tqdm  # For progress bar
 import torch.optim as optim
 
-alphabet = os.listdir("monkbrill2")
+alphabet = os.listdir("augmented_data")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 
@@ -23,7 +23,7 @@ transform = transforms.Compose([
     
 ])
 
-dataset = datasets.ImageFolder(root="monkbrill2", transform=transform)
+dataset = datasets.ImageFolder(root="augmented_data", transform=transform)
 
 train_size = int(0.8 * len(dataset))
 test_size = len(dataset) - train_size
