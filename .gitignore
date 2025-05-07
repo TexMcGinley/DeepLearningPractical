@@ -1,2 +1,6 @@
 data
 Habbakuk font
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+augmented_data
