@@ -44,7 +44,7 @@ def count_peaks(histogram, height_threshold=25, distance=30, plot=True):
     return len(peaks), peaks
 
 def cluster_boxes(box_centers, n_clusters):
-    box_ids = [box_id for box_id, y in box_centers]
+    box_ids = [box_id for box_id, _ in box_centers]
     y_coords = np.array([[y] for _, y in box_centers])
 
     kmeans = KMeans(n_clusters=n_clusters, n_init='auto')
@@ -106,7 +106,7 @@ def run(args):
     image_paths = os.listdir(args.line_input)
     for image_path in image_paths:
         file_name = image_path.split(".")[0]
-        image_path = args.line_input + "/" + image_path
+        image_path = f"{args.line_input}/{image_path}"
 
         # Read and preprocess the image
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models import resnet50
+from torchvision.models import alexnet
 from torchsummary import summary
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split
@@ -17,7 +17,7 @@ transform = transforms.Compose([
     transforms.RandomAffine(degrees=0, translate=(0.02, 0.02)),
     transforms.RandomPerspective(distortion_scale=0.1, p=0.5),
     transforms.ColorJitter(brightness=0.3, contrast=0.3),
-    transforms.Resize((48, 48)),
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
@@ -31,10 +31,10 @@ train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-model = resnet50()
-model.fc = nn.Linear(model.fc.in_features, len(alphabet))
+model = alexnet()
+model.classifier[6] = nn.Linear(model.classifier[6].in_features, len(alphabet))
 model.to(device)
-summary(model, (3, 48, 48))
+summary(model, (3, 224, 224))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
@@ -80,5 +80,5 @@ for epoch in range(num_epochs):
     accuracy = 100 * correct / total
     print(f"Epoch {epoch+1}, Loss: {running_loss:.4f}, Accuracy: {accuracy:.2f}%, Test Accuracy: {test_accuracy:.2f}%")
 
-torch.save(model.state_dict(), "resnet50_model.pth")
+torch.save(model.state_dict(), "alexnet_model.pth")
 

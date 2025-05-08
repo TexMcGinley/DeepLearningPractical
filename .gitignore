@@ -4,3 +4,5 @@ Habbakuk font
 **/*.pyc
 **/*.pyo
 augmented_data
+line-crops
+char-crops

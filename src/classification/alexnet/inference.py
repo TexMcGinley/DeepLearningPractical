@@ -1,5 +1,5 @@
 import torch
-from torchvision.models import resnet50
+from torchvision.models import alexnet
 import torch.nn as nn
 from PIL import Image, ImageOps
 from torchvision import transforms
@@ -10,15 +10,15 @@ from utils.alphabet import alphabet
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_classes = 27
 
-model = resnet50()
-model.fc = nn.Linear(model.fc.in_features, num_classes)
-model.load_state_dict(torch.load("resnet50_model.pth", map_location=device))
+model = alexnet()
+model.classifier[6] = nn.Linear(model.classifier[6].in_features, len(alphabet))
+model.load_state_dict(torch.load("alexnet_model.pth", map_location=device))
 model.to(device)
 model.eval()
 
 transform = transforms.Compose([
     transforms.Grayscale(num_output_channels=3),
-    transforms.Resize((48, 48)),
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
