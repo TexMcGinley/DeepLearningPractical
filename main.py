@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # Model
     parser.add_argument("--model", type=str, default="resnet50", help="Path to the image file")
     parser.add_argument("--model_input", type=str, default="char-crops", help="Path to the image file")
-    parser.add_argument("--model_output", type=str, default="output", help="Path to the image file")
+    parser.add_argument("--model_output", type=str, default="results", help="Path to the image file")
 
     parser.add_argument("--answers", type=str, help="Path to the image file")
 

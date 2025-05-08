@@ -25,10 +25,10 @@ transform = transforms.Compose([
 
 def run(args):
     os.makedirs(args.model_output, exist_ok=True)
-    for text in os.listdir(args.model_input):
+    for i, text in enumerate(os.listdir(args.model_input)):
 
         # Empty the existing file if it alr exists
-        with open(f"{args.model_output}/{text}.txt", "w"):
+        with open(f"{args.model_output}/img_{i:03}_characters.txt", "w"):
             pass
 
         for line in os.listdir(f"{args.model_input}/{text}"):
@@ -49,7 +49,7 @@ def run(args):
                 outputs = model(batch)
                 _, predicted = torch.max(outputs, 1)
                 
-                with open(f"{args.model_output}/{text}.txt", "a", encoding='utf-8') as f:
+                with open(f"{args.model_output}/img_{i:03}_characters.txt", "a", encoding='utf-8') as f:
                     chars =np.array(list(alphabet.values()))[predicted.cpu().numpy()][::-1]
                     chars = [char.encode().decode('unicode_escape') for char in chars ]
                     f.write("".join(chars)+"\n")

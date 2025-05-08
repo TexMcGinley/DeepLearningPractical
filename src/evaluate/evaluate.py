@@ -4,7 +4,8 @@ import os
 def run(args):
     for i in os.listdir(args.model_output):
         model_output_path = os.path.join(args.model_output, i)
-        ground_truth_path = os.path.join(args.answers, i)
+
+        ground_truth_path = os.path.join(args.answers, "_".join(i.split("_")[0:2]) + ".txt")
         
         print("Evaluation for:", i.split(".")[0], "Model:", args.model)
         # Ground truth
@@ -15,7 +16,6 @@ def run(args):
         with open(model_output_path, "r", encoding='utf-8') as f:
             model_answer = f.read()
 
-        print("Lecvenshtein distance:", Levenshtein.distance(ground_truth, model_answer))
-        print("Levenshtein distance normalized:", Levenshtein.distance(ground_truth, model_answer) / max(len(ground_truth), len(model_answer)))
-        print("Levenshtein ratio:", Levenshtein.ratio(ground_truth, model_answer))
-        print("\n")
+        print(f"Lecvenshtein distance: {Levenshtein.distance(ground_truth, model_answer):.4f}")
+        print(f"Levenshtein distance normalized: {Levenshtein.distance(ground_truth, model_answer) / max(len(ground_truth), len(model_answer)):.4f}")
+        print(f"Levenshtein ratio: {Levenshtein.ratio(ground_truth, model_answer):.4f}\n")
