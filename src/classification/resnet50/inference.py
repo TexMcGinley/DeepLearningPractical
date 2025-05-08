@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 from torchvision import transforms
 import os
 import numpy as np
-from utils.alphabet import alphabet
+from src.utils.alphabet import alphabet
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_classes = 27

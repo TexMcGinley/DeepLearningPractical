@@ -1,9 +1,9 @@
 import argparse
-from segment.line import run as run_line
-from segment.character import run as run_char
-from classification.resnet50 import run as run_resnet50
-from classification.alexnet import run as run_alexnet
-from evaluate import run as run_evaluate
+from src.segment.line import run as run_line
+from src.segment.character import run as run_char
+from src.classification.resnet50 import run as run_resnet50
+from src.classification.alexnet import run as run_alexnet
+from src.evaluate import run as run_evaluate
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DL Pipeline")
@@ -37,5 +37,5 @@ if __name__ == "__main__":
 
 
     if args.answers:
-        from evaluate.evaluate import run as run_evaluate
+        from src.evaluate.evaluate import run as run_evaluate
         run_evaluate(args)
