@@ -6,3 +6,8 @@ Habbakuk font
 augmented_data
 line-crops
 char-crops
+build
+data/**
+alexnet_model.pth
+**/dl_pipeline.egg-info/**
+input/** */

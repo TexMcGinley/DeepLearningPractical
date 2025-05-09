@@ -1,15 +1,105 @@
+# Deciphering Deep Sea Scrolls
 
+This project focusses on the segmentation and recognition of ancient Hebrew scrolls. We implemented a pipeline which made use of connected component analysis (CCA) for segmenting the letters, followed by ResNet50 and AlexNet for classifying the characters. The goal was to build a pipeline for processing and classifying hard to read historical handwritten text.
 
-How to run the code:
+## Installation & Running the pipeline
 
-Please clone our repository using git clone https://github.com/TexMcGinley/DeepLearningPractical.git
+Step 1. Clone the repository
 
-First make sure that the relevant packages are installed.
-You can do this by using pip install -r requirements.txt (from root folder, DeepLearningPractical)
+```bash
+git clone https://github.com/TexMcGinley/DeepLearningPractical
+cd DeepLearningPractical
+```
 
-Secondly, download the AlexNet weight available here: https://drive.google.com/drive/folders/1IG2JCnTzJKKXvYyTGU_rZ6KwEtjc6-L0?usp=sharing
-and add it to the root folder. 
+Step 2. Create a virtual environment. Code was created with python 3.11.
 
-Then from the root folder run: python main.py (path to images) [optional: ] --model (alexnet or resnet50)
+```bash
+conda create --name dlp python=3.11
+conda activate dlp
+```
 
-The output txt files can then be found in ./results
+Step 3. Install dependencies
+
+Note: This only installs the CPU version of PyTorch, the CUDA version is recommended.
+
+```bash
+pip install .
+```
+
+Step 4. Run the base model (ResNet50)
+
+```bash
+python main.py /path/to/input
+```
+
+### Optional
+
+Run model with AlexNet. The AlexNet weights need to be downloaded from [here](https://drive.google.com/drive/folders/1IG2JCnTzJKKXvYyTGU_rZ6KwEtjc6-L0?usp=sharing) and put in the models folder as follows.
+
+```
+├── README.md
+├── build
+├── data
+├── main.py
+├── models
+│   ├── alexnet_model.pth       <---- Put the AlexNet weights here
+│   └── resnet50_model.pth
+├── outputs
+├── plots
+├── requirements.txt
+├── results
+├── scripts
+├── setup.py
+└── src
+```
+
+To run with AlexNet
+
+```bash
+python main.py /path/to/input --model alexnet
+```
+
+The intermediair results are in the `outputs` folder while the final model predictions per input are in the `results` folder. To run the evaluation script make sure the ground truth files follow the following naming scheme `img_001.txt, img_002.txt...`.
+
+To run with evaluation
+
+```bash
+python main.py /path/to/input --model alexnet --answers /path/to/answers
+```
+
+To images used to train the model can be downloaded [here](https://drive.google.com/file/d/1Ky6vJA1Dw_zW1TT_UAycnWb43EZCJsd5/view?usp=sharing). The images need to be unzipped and put in the data folder as follows:
+
+```
+├── README.md
+├── build
+├── data
+│   ├── test
+│   └── train                   <---- Unzipped train folder
+├── main.py
+├── models
+├── outputs
+├── plots
+├── requirements.txt
+├── results
+├── scripts
+├── setup.py
+└── src
+```
+
+To train the models the following commands can be executed
+
+```
+train-alexnet /path/to/train/files
+```
+
+or
+
+```
+train-resnet50 /path/to/train/files
+```
+
+Some flags can be used to specify `--epochs`, `--batch_size` and `--learning_rate`.
+
+## Other code used
+
+For this project we took code from our projects for the courses in Deep Learning and Trustworthy and Explainable AI.

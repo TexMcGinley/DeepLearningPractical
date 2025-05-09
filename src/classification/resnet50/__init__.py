@@ -1,2 +1,3 @@
 from .inference import run
-__all__ = ["run"]
+from .train import train
+__all__ = ["run", "train"]
