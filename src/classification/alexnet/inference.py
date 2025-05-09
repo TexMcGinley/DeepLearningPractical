@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 from torchvision import transforms
 import os
 import numpy as np
-from utils.alphabet import alphabet
+from src.utils.alphabet import alphabet
 
 # Code modified from other university projects as specified in the README file
 def run():

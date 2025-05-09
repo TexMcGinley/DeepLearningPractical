@@ -1,6 +1,6 @@
 import cv2
 import os
-from segment.line import mask_bounding_boxes, crop_to_content
+from src.segment.line import mask_bounding_boxes, crop_to_content
 
 def run(args):
     image_paths = os.listdir("outputs/line-crops")
