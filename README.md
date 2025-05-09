@@ -67,14 +67,14 @@ To run with evaluation
 python main.py /path/to/input --model alexnet --answers /path/to/answers
 ```
 
-To images used to train the model can be downloaded [here](https://drive.google.com/file/d/1Ky6vJA1Dw_zW1TT_UAycnWb43EZCJsd5/view?usp=sharing). The images need to be and put in the data folder as follows:
+To images used to train the model can be downloaded [here](https://drive.google.com/file/d/1Ky6vJA1Dw_zW1TT_UAycnWb43EZCJsd5/view?usp=sharing). The images need to be unzipped and put in the data folder as follows:
 
 ```
 ├── README.md
 ├── build
 ├── data
 │   ├── test
-│   └── train                   <---- Unzipped train file
+│   └── train                   <---- Unzipped train folder
 ├── main.py
 ├── models
 ├── outputs
