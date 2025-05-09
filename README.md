@@ -69,7 +69,7 @@ python main.py /path/to/input --model alexnet --answers /path/to/answers
 
 To images used to train the model can be downloaded [here](https://drive.google.com/file/d/1Ky6vJA1Dw_zW1TT_UAycnWb43EZCJsd5/view?usp=sharing). The images need to be and put in the data folder as follows:
 
-```bash
+```
 ├── README.md
 ├── build
 ├── data
