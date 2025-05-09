@@ -103,10 +103,10 @@ def sort_cluster(clusters, stats):
     return sorted_dict
 
 def run(args):
-    image_paths = os.listdir(args.line_input)
+    image_paths = os.listdir(args.input)
     for image_path in image_paths:
         file_name = image_path.split(".")[0]
-        image_path = f"{args.line_input}/{image_path}"
+        image_path = f"{args.input}/{image_path}"
 
         # Read and preprocess the image
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
@@ -137,6 +137,6 @@ def run(args):
             masked_image = mask_bounding_boxes(image, stats, i[1], padding=2)
             cropped_image = crop_to_content(masked_image, padding=2)
 
-            os.makedirs(f"{args.line_output}/{file_name}", exist_ok=True)
-            cv2.imwrite(f"{args.line_output}/{file_name}/crop_{i[0]}.png", cropped_image)
+            os.makedirs(f"outputs/line-crops/{file_name}", exist_ok=True)
+            cv2.imwrite(f"outputs/line-crops/{file_name}/crop_{i[0]}.png", cropped_image)
 

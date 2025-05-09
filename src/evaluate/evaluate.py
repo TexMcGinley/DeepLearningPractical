@@ -2,8 +2,8 @@ import Levenshtein
 import os
 
 def run(args):
-    for i in os.listdir(args.model_output):
-        model_output_path = os.path.join(args.model_output, i)
+    for i in os.listdir("results"):
+        model_output_path = os.path.join("results/", i)
 
         ground_truth_path = os.path.join(args.answers, "_".join(i.split("_")[0:2]) + ".txt")
         

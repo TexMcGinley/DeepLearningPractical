@@ -1,2 +1,3 @@
 from .alphabet import alphabet
-__all__ = ["alphabet"]
+from .plot import plot
+__all__ = ["alphabet", "plot"]

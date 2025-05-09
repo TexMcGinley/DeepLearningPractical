@@ -7,78 +7,100 @@ from torch.utils.data import DataLoader, random_split
 import os
 from tqdm import tqdm 
 import torch.optim as optim
+from torchmetrics.classification import MulticlassAccuracy
+from torchmetrics.aggregation import MeanMetric
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from utils.plot import plot
 
-alphabet = os.listdir("augmented_data/augmented_data")
+def train(args = None):
+    alphabet = os.listdir("data/train")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=3),
-    transforms.RandomAffine(degrees=0, translate=(0.02, 0.02)),
-    transforms.RandomPerspective(distortion_scale=0.1, p=0.5),
-    transforms.ColorJitter(brightness=0.3, contrast=0.3),
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
+    transform = transforms.Compose([
+        transforms.Grayscale(num_output_channels=3),
+        transforms.RandomAffine(degrees=0, translate=(0.02, 0.02)),
+        transforms.RandomPerspective(distortion_scale=0.1, p=0.5),
+        transforms.ColorJitter(brightness=0.3, contrast=0.3),
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5])
+    ])
 
-dataset = datasets.ImageFolder(root="augmented_data/augmented_data", transform=transform)
+    dataset = datasets.ImageFolder(root="data/train", transform=transform)
 
-train_size = int(0.8 * len(dataset))
-test_size = len(dataset) - train_size
+    train_size = int(0.8 * len(dataset))
+    test_size = len(dataset) - train_size
 
-train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-model = alexnet()
-model.classifier[6] = nn.Linear(model.classifier[6].in_features, len(alphabet))
-model.to(device)
-summary(model, (3, 224, 224))
+    model = alexnet()
+    model.classifier[6] = nn.Linear(model.classifier[6].in_features, len(alphabet))
+    model.to(device)
+    summary(model, (3, 224, 224))
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    scheduler = ReduceLROnPlateau(optimizer)
 
-num_epochs = 10
+    num_epochs = 10
 
-for epoch in range(num_epochs):
-    model.train()
-    running_loss = 0.0
-    correct = 0
-    total = 0
-    test_correct = 0
-    test_total = 0
-    for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
-        images, labels = images.to(device), labels.to(device)
+    train_loss, test_loss = [], []
+    train_acc, test_acc = [], []
 
-        outputs = model(images)
-        loss = criterion(outputs, labels)
+    loss_tracker = MeanMetric().to(device)
+    acc_tracker = MulticlassAccuracy(num_classes=27).to(device)
 
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+    for epoch in range(num_epochs):
+        model.train()
 
-        running_loss += loss.item()
-        _, predicted = torch.max(outputs, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
+            images, labels = images.to(device), labels.to(device)
 
-    for images, labels in tqdm(test_loader, desc=f"Testing Epoch {epoch+1}/{num_epochs}"):
-        images, labels = images.to(device), labels.to(device)
+            optimizer.zero_grad()
 
-        # Forward pass
-        outputs = model(images)
-        loss = criterion(outputs, labels)
+            outputs = model(images)
+            loss = criterion(outputs, labels)
 
-        # Track metrics
-        running_loss += loss.item()
-        _, predicted = torch.max(outputs, 1)
-        test_total += labels.size(0)
-        test_correct += (predicted == labels).sum().item()
+            loss.backward()
+            optimizer.step()
 
-    test_accuracy = 100 * test_correct / test_total
-    accuracy = 100 * correct / total
-    print(f"Epoch {epoch+1}, Loss: {running_loss:.4f}, Accuracy: {accuracy:.2f}%, Test Accuracy: {test_accuracy:.2f}%")
+            loss_tracker.update(loss.item())
+            acc_tracker.update(outputs, labels)
 
-torch.save(model.state_dict(), "alexnet_model.pth")
+        train_loss.append(loss_tracker.compute().item())
+        train_acc.append(acc_tracker.compute().item())
 
+        loss_tracker.reset()
+        acc_tracker.reset()
+
+
+        with torch.no_grad():
+            model.eval()
+
+            for images, labels in tqdm(test_loader, desc=f"Testing Epoch {epoch+1}/{num_epochs}"):
+
+                images, labels = images.to(device), labels.to(device)
+
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+
+                loss_tracker.update(loss.item())
+                acc_tracker.update(outputs, labels)
+
+            test_loss.append(loss_tracker.compute().item())
+            test_acc.append(acc_tracker.compute().item())
+
+            scheduler.step(loss_tracker.compute().item())
+
+            loss_tracker.reset()
+            acc_tracker.reset()
+
+            print(f"Epoch {epoch+1}, Loss: {train_loss[-1]:.4f}, Accuracy: {train_acc[-1]*100:.2f}%, Test Loss: {train_loss[-1]:.2f} Test Accuracy: {test_acc[-1]*100:.2f}%")
+
+    plot(train_loss, test_loss, "Loss AlexNet Model", "Train Loss", "Test Loss")
+    plot(train_acc, test_acc, "Accuracy AlexNet Model", "Train Accuracy", "Test Accuracy")
+
+    torch.save(model.state_dict(), "models/alexnet_model.pth")
