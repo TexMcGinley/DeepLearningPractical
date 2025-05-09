@@ -59,7 +59,7 @@ To run with AlexNet
 python main.py /path/to/input --model alexnet
 ```
 
-The intermediair results are in the `outputs` folder while the final model predictions per input are in the `results` folder. To run the evaluation script make sure the ground truth files follow the following labeling scheme `img_001.txt, img_002.txt...`.
+The intermediair results are in the `outputs` folder while the final model predictions per input are in the `results` folder. To run the evaluation script make sure the ground truth files follow the following naming scheme `img_001.txt, img_002.txt...`.
 
 To run with evaluation
 
