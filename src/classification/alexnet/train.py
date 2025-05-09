@@ -11,9 +11,21 @@ from torchmetrics.classification import MulticlassAccuracy
 from torchmetrics.aggregation import MeanMetric
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from utils.plot import plot
+import argparse
 
-def train(args = None):
-    alphabet = os.listdir("data/train")
+# Code modified from other university projects as specified in the README file
+def train():
+    parser = argparse.ArgumentParser(description="Arguments for training ResNet50 model")
+    parser.add_argument("input", type=str, help="Path to the input data directory")
+    parser.add_argument("--epochs", type=int, default=10, help="Where to write distorted images")
+    parser.add_argument("--batch_size", type=int, default=32, help="Batch size for training")
+    parser.add_argument("--learning_rate", type=float, default=1e-4, help="Learning rate for the optimizer")
+    args = parser.parse_args()
+
+    assert args.input, "Input directory is required"
+    assert os.path.exists(args.input), f"Input directory {args.input} does not exist"
+
+    alphabet = os.listdir(args.input)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -27,14 +39,14 @@ def train(args = None):
         transforms.Normalize(mean=[0.5], std=[0.5])
     ])
 
-    dataset = datasets.ImageFolder(root="data/train", transform=transform)
+    dataset = datasets.ImageFolder(root=args.input, transform=transform)
 
     train_size = int(0.8 * len(dataset))
     test_size = len(dataset) - train_size
 
     train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
 
     model = alexnet()
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, len(alphabet))
@@ -42,10 +54,8 @@ def train(args = None):
     summary(model, (3, 224, 224))
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
     scheduler = ReduceLROnPlateau(optimizer)
-
-    num_epochs = 10
 
     train_loss, test_loss = [], []
     train_acc, test_acc = [], []
@@ -53,10 +63,10 @@ def train(args = None):
     loss_tracker = MeanMetric().to(device)
     acc_tracker = MulticlassAccuracy(num_classes=27).to(device)
 
-    for epoch in range(num_epochs):
+    for epoch in range(args.epochs):
         model.train()
 
-        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{args.epochs}"):
             images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
@@ -80,7 +90,7 @@ def train(args = None):
         with torch.no_grad():
             model.eval()
 
-            for images, labels in tqdm(test_loader, desc=f"Testing Epoch {epoch+1}/{num_epochs}"):
+            for images, labels in tqdm(test_loader, desc=f"Testing Epoch {epoch+1}/{args.epochs}"):
 
                 images, labels = images.to(device), labels.to(device)
 

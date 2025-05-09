@@ -7,7 +7,8 @@ import os
 import numpy as np
 from utils.alphabet import alphabet
 
-def run(args = None):
+# Code modified from other university projects as specified in the README file
+def run():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     num_classes = 27
 

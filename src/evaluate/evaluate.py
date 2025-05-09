@@ -2,12 +2,15 @@ import Levenshtein
 import os
 
 def run(args):
+    assert os.path.exists(args.answers), "Answers path does not exist"
+
     for i in os.listdir("results"):
         model_output_path = os.path.join("results/", i)
 
         ground_truth_path = os.path.join(args.answers, "_".join(i.split("_")[0:2]) + ".txt")
         
         print("Evaluation for:", i.split(".")[0], "Model:", args.model)
+        
         # Ground truth
         with open(ground_truth_path, "r", encoding='utf-8') as f:
             ground_truth = f.read()

@@ -85,3 +85,21 @@ To images used to train the model can be downloaded [here](https://drive.google.
 ├── setup.py
 └── src
 ```
+
+To train the models the following commands can be executed
+
+```
+train-alexnet /path/to/train/files
+```
+
+or
+
+```
+train-resnet50 /path/to/train/files
+```
+
+Some flags can be used to specify `--epochs`, `--batch_size` and `--learning_rate`.
+
+## Other code used
+
+For this project we took code from our projects for the courses in Deep Learning and Trustworthy and Explainable AI.

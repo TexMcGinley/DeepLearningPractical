@@ -56,6 +56,7 @@ def cluster_boxes(box_centers, n_clusters):
 
     return clusters
 
+#  https://stackoverflow.com/questions/44333605/what-does-bitwise-and-operator-exactly-do-in-opencv
 def mask_bounding_boxes(image, stats, box_ids, padding=0):
     mask = np.zeros(image.shape[:2], dtype=np.uint8)
 

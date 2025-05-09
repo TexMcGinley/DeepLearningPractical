@@ -1,12 +1,12 @@
 import argparse
 from segment.line import run as run_line
 from segment.character import run as run_char
-from classification.resnet50 import run as run_resnet50, train as train_resnet50
-from classification.alexnet import run as run_alexnet, train as train_alexnet
+from classification.resnet50 import run as run_resnet50
+from classification.alexnet import run as run_alexnet
 from evaluate.evaluate import run as run_evaluate
 import os
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="DL Pipeline")
 
     parser.add_argument("input", type=str, help="Path to the image folder")
@@ -24,12 +24,15 @@ if __name__ == "__main__":
         if not os.path.exists("models/alexnet_model.pth"):
             print("Alexnet model not found. Train the model or provide weights")
             exit(1)
-        run_alexnet(args)
+        run_alexnet()
     elif args.model == "resnet50":
         if not os.path.exists("models/resnet50_model.pth"):
             print("ResNet50 model not found. Train the model or provide weights")
             exit(1)
-        run_resnet50(args)
+        run_resnet50()
 
     if args.answers:
         run_evaluate(args)
+
+if __name__ == "__main__":
+    main()
